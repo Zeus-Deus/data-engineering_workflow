@@ -12,4 +12,6 @@
 
 - **Error Handling**: Use `try` and `except` blocks to catch and handle errors gracefully in your Python scripts. Ensure that meaningful error messages are logged for debugging purposes.
 
+- **Modular Programming**: Follow the principles of modular programming by breaking down the code into separate, interchangeable modules. Each module should contain everything necessary to execute only one aspect of the desired functionality. This promotes code reuse, maintainability, and ease of debugging. Avoid copying code across files; instead, create reusable modules and import them as needed.
+
 Follow these guidelines to maintain a consistent and organized codebase throughout the project.

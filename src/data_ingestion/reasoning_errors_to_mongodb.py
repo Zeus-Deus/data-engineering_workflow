@@ -1,26 +1,26 @@
-import requests
-from bs4 import BeautifulSoup
-from pymongo import MongoClient
+import sys
 import os
 from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv(dotenv_path="/usr/src/app/.env")
+
+# Set up the Python path to include the common module
+sys.path.append(os.getenv("PYTHONPATH"))
+
+import requests
+from bs4 import BeautifulSoup
 from datetime import datetime
 import logging
+from src.common.database import MongoDBConnection
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-load_dotenv(dotenv_path="/usr/src/app/.env")
-
 # MongoDB connection details
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DB")
-MONGO_COLLECTION = os.getenv("MONGO_COLLECTION")
-
-# Validate environment variables
-if not all([MONGO_URI, MONGO_DB, MONGO_COLLECTION]):
-    logger.error("Missing MongoDB environment variables. Check your .env file.")
-    exit(1)
+MONGO_DB = os.getenv("MONGO_DB_REASONING_ERRORS")
+MONGO_COLLECTION = os.getenv("MONGO_COLLECTION_REASONING_ERRORS")
 
 urls = [
     "https://en.wikipedia.org/wiki/List_of_cognitive_biases"
@@ -47,9 +47,8 @@ def parse_data(html_content):
     
 def save_to_mongodb(url, html_content):
     try:
-        client = MongoClient(MONGO_URI)
-        db = client[MONGO_DB]
-        collection = db[MONGO_COLLECTION]
+        db_connection = MongoDBConnection(db_name=MONGO_DB, collection_name=MONGO_COLLECTION)
+        collection, client = db_connection.get_collection()
         
         # Check if document already exists to avoid duplicates
         existing_doc = collection.find_one({"url": url})
