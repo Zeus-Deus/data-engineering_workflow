@@ -1,4 +1,5 @@
-from extract import get_raw_data
+#from extract import get_raw_data
+from src.pipelines.reasoning_errors.extract import get_raw_data
 import logging
 from bs4 import BeautifulSoup
 import re

@@ -13,8 +13,10 @@ import logging
 from sqlalchemy import Table, Column, Integer, String, MetaData
 from sqlalchemy.exc import SQLAlchemyError
 from src.common.postgres_utils import get_postgres_engine
-from extract import get_raw_data
-from transform import transform_data
+#from extract import get_raw_data
+#from transform import transform_data
+from src.pipelines.reasoning_errors.extract import get_raw_data
+from src.pipelines.reasoning_errors.transform import transform_data
 
 # Load environment variables
 load_dotenv(dotenv_path="/usr/src/app/.env")

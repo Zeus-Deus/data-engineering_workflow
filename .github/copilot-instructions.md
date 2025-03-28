@@ -8,7 +8,7 @@
 
 - **Languages and Tools**: Python is the primary language. Use libraries and frameworks relevant to data engineering, such as pandas for ETL processes and libraries compatible with your chosen vector store like Qdrant.
 
-- **Workflow**: The project involves fetching raw data, ETL processes between MongoDB and PostgreSQL, automating with Airflow, and integrating a vector store for enhanced data querying.
+- **Workflow**: The project involves fetching raw data, ETL processes between MongoDB and PostgreSQL, automating with Prefect, and integrating a vector store for enhanced data querying.
 
 - **Error Handling**: Use `try` and `except` blocks to catch and handle errors gracefully in your Python scripts. Ensure that meaningful error messages are logged for debugging purposes using the `logging` module.
 
