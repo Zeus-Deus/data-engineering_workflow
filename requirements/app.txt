@@ -1,6 +1,10 @@
--r base-requirements.txt
 beautifulsoup4
 tabulate
 pymongo
 sqlalchemy
 psycopg2-binary
+python-dotenv
+requests
+pandas
+numpy
+logging
