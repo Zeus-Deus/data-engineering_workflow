@@ -54,7 +54,7 @@ def create_table(engine, table_name):
         return None
 
 def load_data_to_postgres(data, table_name):
-    engine = get_postgres_engine(POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB)
+    engine = get_postgres_engine()
     if engine is None:
         logger.error("Failed to get PostgreSQL engine.")
         return

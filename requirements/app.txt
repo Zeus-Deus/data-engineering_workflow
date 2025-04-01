@@ -9,3 +9,4 @@ pandas
 numpy
 logging
 prefect==2.20.16
+azure-storage-blob

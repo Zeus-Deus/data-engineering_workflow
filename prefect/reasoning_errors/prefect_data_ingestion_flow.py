@@ -11,6 +11,7 @@ sys.path.append(os.getenv("PYTHONPATH"))
 from prefect import flow, task
 import logging
 from src.data_ingestion.reasoning_errors_to_mongodb import urls, fetch_data, parse_data, save_to_mongodb
+from src.data_ingestion.reasoning_errors_to_azure import upload_raw_data
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -28,7 +29,16 @@ def process_url(url: str):
         if not parsed_content:
             logger.error(f"Failed to parse data from {url}")
             return
-        save_to_mongodb(url, parsed_content)
+
+        # Check if we are using Azure Blob Storage or MongoDB
+        use_azure = os.getenv("USE_AZURE", "False").lower() in ("true", "1")
+        if use_azure:
+            logger.info("Uploading data to Azure Blob Storage")
+            upload_raw_data(url, parsed_content)
+        else:
+            logger.info("Saving data to MongoDB")
+            save_to_mongodb(url, parsed_content)
+
         logger.info(f"Data ingestion successful for {url}")
     except Exception as e:
         logger.error(f"Error processing URL {url}: {e}")
