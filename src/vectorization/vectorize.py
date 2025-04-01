@@ -41,6 +41,7 @@ def create_collection():
 def vectorize_text(text: str) -> list:
     model = SentenceTransformer('all-MiniLM-L6-v2')
     vector = model.encode(text).tolist()
+    logger.info(f"Generated vector of length {len(vector)} for text: {text[:100]}...")
     return vector
 
 def upsert_vector(text: str, point_id: int):
@@ -51,8 +52,10 @@ def upsert_vector(text: str, point_id: int):
         payload={"text": text}
     )
     try:
-        client.upsert(collection_name=COLLECTION_NAME, points=[point])
-        logger.info(f"Upserted point_id {point_id} with vector length {len(vector)}")
+        logger.info(f"Attempting to upsert point_id {point_id} into collection '{COLLECTION_NAME}'")
+        response = client.upsert(collection_name=COLLECTION_NAME, points=[point])
+        logger.info(f"Upsert response: {response}")
+        logger.info(f"Successfully upserted point_id {point_id} with vector length {len(vector)}")
     except Exception as e:
         logger.error(f"Error upserting vector: {e}")
 
