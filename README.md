@@ -4,16 +4,19 @@ This project is a modular and scalable data engineering workflow designed to han
 
 ## Key Features
 
-- **Data Ingestion**: Fetch raw data from external sources (e.g., web scraping, APIs) and store it in MongoDB for initial processing.
-- **ETL Pipelines**: Extract, transform, and load data between MongoDB and PostgreSQL using Python-based pipelines.
+- **Data Ingestion**: Fetch raw data from external sources (e.g., web scraping, APIs) and store it in MongoDB or Azure Blob Storage for initial processing.
+- **ETL Pipelines**: Extract, transform, and load data between MongoDB/Azure Blob Storage and PostgreSQL/Azure PostgreSQL using Python-based pipelines.
 - **Automation**: Orchestrate workflows and automate tasks using Prefect for seamless execution and monitoring.
 - **Containerization**: Use Docker and Docker Compose to manage multi-container applications, ensuring portability and consistency across environments.
+- **Azure Integration**: Optionally use Azure services for cloud-based data storage and processing.
 
 ## Tools and Technologies
 
 - **Python**: The primary programming language for implementing ETL pipelines and automation.
 - **MongoDB**: A NoSQL database for storing raw and semi-structured data.
 - **PostgreSQL**: A relational database for structured data storage and querying.
+- **Azure Blob Storage**: A scalable cloud storage solution for raw data ingestion.
+- **Azure PostgreSQL**: A managed PostgreSQL service for structured data storage.
 - **Prefect**: A workflow orchestration tool for automating and monitoring data pipelines.
 - **Docker**: For containerizing the application and managing dependencies.
 - **SQLAlchemy**: For interacting with PostgreSQL in a Pythonic way.
@@ -29,10 +32,24 @@ The project follows a modular structure to ensure maintainability and scalabilit
 - **`docker/`**: Dockerfiles and scripts for containerizing the application.
 - **`prefect/`**: Prefect flows for orchestrating and automating workflows.
 
+## Azure Integration
+
+This project supports Azure services for cloud-based data storage and processing. You can enable Azure integration by setting the appropriate environment variables in your `.env` file. Refer to the `env.example` file for the full list of variables.
+
+### How to Enable Azure Integration:
+1. Set `USE_AZURE=True` in your `.env` file to enable Azure Blob Storage for raw data ingestion.
+2. Set `USE_AZURE_PG=True` in your `.env` file to enable Azure PostgreSQL for structured data storage.
+
+When these options are enabled:
+- Raw data will be fetched from Azure Blob Storage (with support for dynamic or manual blob selection).
+- Transformed data will be loaded into Azure PostgreSQL.
+
+If these options are set to `False`, the pipeline will default to using local MongoDB and PostgreSQL.
+
 ## Getting Started
 
 1. Clone the repository and navigate to the project directory.
-2. Set up the environment variables by creating a `.env` file (refer to `.env.example` for guidance).
+2. Set up the environment variables by creating a `.env` file (refer to `env.example` for guidance).
 3. Use Docker Compose to spin up the required services (MongoDB, PostgreSQL, Prefect, etc.).
 4. Run the Prefect flows or individual scripts to execute the data pipelines.
 
