@@ -21,22 +21,40 @@ COLLECTION_NAME = os.getenv("QDRANT_COLLECTION")
 # Initialize Qdrant client
 client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
-def create_collection():
+def create_collection(force_recreate: bool = False):
+    """
+    Creates the Qdrant collection if it doesn't exist.
+    If it exists and the vector dimensions don't match the expected VECTOR_SIZE,
+    the collection is recreated if force_recreate is True.
+    """
     try:
-        collections = [col.name for col in client.get_collections().collections]
-        if COLLECTION_NAME not in collections:
-            client.recreate_collection(
+        existing_collections = [col.name for col in client.get_collections().collections]
+        if COLLECTION_NAME in existing_collections:
+            collection_info = client.get_collection(collection_name=COLLECTION_NAME)
+            # Access the vector size from the collection config
+            current_dim = collection_info.config.params.vectors.size
+            if current_dim != VECTOR_SIZE:
+                msg = (f"Existing Qdrant collection is configured for dense vectors with {current_dim} dimensions. "
+                       f"Selected embeddings are {VECTOR_SIZE}-dimensional.")
+                if force_recreate:
+                    client.recreate_collection(
+                        collection_name=COLLECTION_NAME,
+                        vectors_config=VectorParams(size=VECTOR_SIZE, distance=Distance.COSINE)
+                    )
+                    logger.info(f"Recreated Qdrant collection '{COLLECTION_NAME}' with force_recreate=True")
+                else:
+                    raise ValueError(msg + " If you want to recreate the collection, set force_recreate=True")
+            else:
+                logger.info(f"Qdrant collection '{COLLECTION_NAME}' already exists with correct dimensions.")
+        else:
+            client.create_collection(
                 collection_name=COLLECTION_NAME,
-                vectors_config=VectorParams(
-                    size=VECTOR_SIZE,
-                    distance=Distance.COSINE
-                )
+                vectors_config=VectorParams(size=VECTOR_SIZE, distance=Distance.COSINE)
             )
             logger.info(f"Created Qdrant collection '{COLLECTION_NAME}'")
-        else:
-            logger.info(f"Qdrant collection '{COLLECTION_NAME}' already exists")
     except Exception as e:
         logger.error(f"Error creating collection: {e}")
+        raise
 
 def vectorize_text(text: str) -> list:
     model = SentenceTransformer('all-MiniLM-L6-v2')

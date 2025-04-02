@@ -12,3 +12,8 @@ prefect==2.20.16
 azure-storage-blob
 sentence-transformers
 qdrant-client
+langchain
+langchain-community
+langchain-openai
+langchain-qdrant
+openai

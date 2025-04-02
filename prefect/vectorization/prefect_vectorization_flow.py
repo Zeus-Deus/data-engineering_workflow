@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv("/usr/src/app/.env")
 
 # Add the PYTHONPATH to sys.path
-sys.path.append(os.getenv("PYTHONPATH", "."))
+sys.path.append(os.getenv("PYTHONPATH"))
 
 from prefect import flow, task
 import requests
