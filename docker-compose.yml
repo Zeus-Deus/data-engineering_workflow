@@ -1,4 +1,11 @@
 services:
+  chat-ui:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chat-ui
+    ports:
+      - 3000:3000
+
   app:
     build:
       context: .
