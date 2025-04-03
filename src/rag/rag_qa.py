@@ -80,6 +80,10 @@ def answer_question(question: str) -> str:
     try:
         qa_chain = create_qa_chain()
         answer = qa_chain.run(question)
+        logger.info(f"Raw answer from QA chain: {answer}")
+        if not isinstance(answer, str):
+            logger.error(f"Answer is not a string, it's a {type(answer)}")
+            answer = str(answer)
         logger.info("Question answered successfully.")
         return answer
     except Exception as e:

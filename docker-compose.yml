@@ -5,6 +5,9 @@ services:
       dockerfile: docker/Dockerfile.app
     volumes:
       - .:/usr/src/app
+    ports:
+      - "8000:8000" # for chat-ui
+    command: uvicorn src.rag.api:app --host 0.0.0.0 --port 8000 # for chat-ui
 
   mongo:
     image: mongo
@@ -78,6 +81,17 @@ services:
         target: /qdrant/config/production.yaml
     volumes:
       - ./qdrant_data:/qdrant/storage
+
+  chat-ui:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chat-ui
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_FASTAPI_URL: ${NEXT_PUBLIC_FASTAPI_URL}
+    depends_on:
+      - app
 
 configs:
   qdrant_config:
