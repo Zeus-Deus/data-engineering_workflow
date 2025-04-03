@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Workflow guidelines for data engineering processes and the chat-ui frontend for RAG.
+globs: src/**/*.py, prefect/**/*.py, chat-ui/**/*.tsx, chat-ui/**/*.ts
+alwaysApply: false
+---
+
+# Workflow Guidelines
+- The project involves:
+  - Fetching raw data.
+  - ETL processes between MongoDB and PostgreSQL.
+  - Automating workflows with Prefect.
+  - Integrating a vector store (e.g., Qdrant) for enhanced data querying.
+  - Developing a `chat-ui` frontend using:
+    - **Next.js** as the React framework.
+    - **TypeScript** for type safety and maintainability.
+    - **TailwindCSS** for styling.
+    - Custom hooks and component-based architecture for modularity.
+  - Connecting the `chat-ui` to the vector store to enable RAG-based querying through a user-friendly interface.

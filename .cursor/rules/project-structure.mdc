@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Guidelines for organizing project structure.
+globs: *
+alwaysApply: false
+---
+
+# Project Structure Guidelines
+- Follow the outlined directory structure for organizing data ingestion, ETL processes, automation, and vectorization tasks.

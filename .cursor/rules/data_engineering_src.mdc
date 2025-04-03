@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Preferred languages, libraries, and tools for data engineering code in the src folder.
+globs: src/**/*.py
+alwaysApply: false
+---
+
+# Language and Tools Guidelines
+- Python is the primary language.
+- Use libraries and frameworks relevant to data engineering:
+  - `pandas` for ETL processes.
+  - Libraries compatible with your chosen vector store (e.g., Qdrant).
