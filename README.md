@@ -68,6 +68,26 @@ Example:
 python src/rag/rag_qa.py "What are cognitive biases?"
 ```
 
+## Chat UI
+
+The project includes a modern web-based chat interface built with Next.js for interacting with the RAG system. The chat UI provides a user-friendly way to ask questions and receive answers from the RAG system.
+
+### Features:
+- Real-time chat interface
+- Modern, responsive design
+- Direct integration with the RAG backend
+- Error handling and loading states
+
+### How to Use the Chat UI:
+1. Ensure all services are running (FastAPI, Qdrant, etc.)
+2. Access the chat interface at `http://localhost:3000`
+3. Type your question and press Enter or click the send button
+4. View the AI's response in the chat interface
+
+![Chat UI Screenshot](screenshots/chat-ui.png)
+
+The chat UI communicates with the FastAPI backend, which processes questions using the RAG system and returns answers in real-time.
+
 ## Getting Started
 
 1. Clone the repository and navigate to the project directory.
