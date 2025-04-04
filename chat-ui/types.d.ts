@@ -6,9 +6,8 @@ declare namespace NodeJS {
 }
 
 // Message types that match the AI SDK expectations
-interface Message {
+export type Message = {
   id: string;
-  role: "user" | "assistant" | "system";
+  role: "user" | "assistant";
   content: string;
-  createdAt?: Date;
-} 
+}; 

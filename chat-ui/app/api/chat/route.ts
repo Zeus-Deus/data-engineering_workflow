@@ -2,10 +2,24 @@
 import { FASTAPI_URL } from '../../../lib/environment';
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
-
   try {
+    const { messages } = await req.json();
+    
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Invalid request: messages array is required" }),
+        { status: 400 }
+      );
+    }
+
     const userMessage = messages[messages.length - 1].content;
+    if (!userMessage || typeof userMessage !== 'string') {
+      return new Response(
+        JSON.stringify({ error: "Invalid request: message content is required" }),
+        { status: 400 }
+      );
+    }
+
     console.log("Sending question to FastAPI:", userMessage);
 
     // Call FastAPI endpoint
@@ -16,20 +30,28 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      throw new Error(`FastAPI backend error: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`FastAPI backend error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     console.log("FastAPI response:", data);
     
-    // Return the response directly since FastAPI already formats it correctly
-    return new Response(JSON.stringify(data), {
+    // Transform the response to match our Message type
+    const assistantMessage = {
+      id: Date.now().toString(),
+      role: "assistant" as const,
+      content: data.answer
+    };
+    
+    return new Response(JSON.stringify(assistantMessage), {
       headers: { "Content-Type": "application/json" }
     });
   } catch (error) {
     console.error("Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to process your request";
     return new Response(
-      JSON.stringify({ error: "Failed to process your request" }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500 }
     );
   }

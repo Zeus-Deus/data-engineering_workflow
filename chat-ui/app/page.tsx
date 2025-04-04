@@ -1,20 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
-// Define message type
-type Message = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-};
+import { Message } from "@/components/Message";
+import { ChatInput } from "@/components/ChatInput";
+import { Message as MessageType } from "@/types";
 
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,7 +31,7 @@ export default function ChatInterface() {
       setErrorMessage("");
       
       // Add user message
-      const userMessage: Message = {
+      const userMessage: MessageType = {
         id: Date.now().toString(),
         role: "user",
         content: input
@@ -55,16 +48,23 @@ export default function ChatInterface() {
       });
       
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API error: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log("Received response data:", data);
       
       // Add assistant message
-      setMessages(prev => [...prev, data]);
+      setMessages(prev => {
+        console.log("Previous messages:", prev);
+        const newMessages = [...prev, data];
+        console.log("New messages array:", newMessages);
+        return newMessages;
+      });
     } catch (err) {
       console.error("Error submitting:", err);
-      setErrorMessage("Failed to send message. Please try again.");
+      setErrorMessage(err instanceof Error ? err.message : "Failed to send message. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -78,15 +78,10 @@ export default function ChatInterface() {
         </CardHeader>
 
         <CardContent className="flex-grow overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] rounded-lg p-3 ${
-                message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
-              }`}>
-                <p className="whitespace-pre-wrap">{message.content}</p>
-              </div>
-            </div>
-          ))}
+          {messages.map((message) => {
+            console.log("Rendering message:", message);
+            return <Message key={message.id} message={message} />;
+          })}
           {errorMessage && (
             <div className="flex justify-center">
               <div className="max-w-[80%] rounded-lg p-3 bg-red-100 text-red-800">
@@ -98,18 +93,12 @@ export default function ChatInterface() {
         </CardContent>
 
         <CardFooter className="border-t p-4">
-          <form onSubmit={handleSubmit} className="flex w-full gap-2">
-            <Input
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Ask a question..."
-              className="flex-grow"
-              disabled={isLoading}
-            />
-            <Button type="submit" disabled={isLoading || !input.trim()}>
-              {isLoading ? "Thinking..." : <Send className="h-4 w-4" />}
-            </Button>
-          </form>
+          <ChatInput
+            input={input}
+            isLoading={isLoading}
+            onInputChange={handleInputChange}
+            onSubmit={handleSubmit}
+          />
         </CardFooter>
       </Card>
     </div>
