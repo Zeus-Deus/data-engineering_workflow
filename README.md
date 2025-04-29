@@ -84,7 +84,7 @@ The project includes a modern web-based chat interface built with Next.js for in
 3. Type your question and press Enter or click the send button
 4. View the AI's response in the chat interface
 
-![Chat UI Screenshot](screenshots/chat-ui.png)
+![Classify Bias Screenshot](screenshots/classify-bias.png)
 
 The chat UI communicates with the FastAPI backend, which processes questions using the RAG system and returns answers in real-time.
 
