@@ -1,0 +1,43 @@
+# Language and Tools Guidelines
+- Use Python as the primary language for all data engineering code.
+- Use `pandas` for ETL processes and libraries compatible with your vector store (e.g., Qdrant).
+
+# Environment Variables Guidelines
+- Store sensitive data in a `.env` file and reference environment variables in scripts for security.
+- Do not use default values when calling environment variables.
+
+# Docker Guidelines
+- Use Docker Compose to manage multi-container applications.
+- If a service in `docker-compose.yml` becomes too large, break it into a separate `Dockerfile`.
+- Use the `docker compose` command (without a hyphen).
+
+# Project Structure Guidelines
+- Organize code into logical modules or packages; follow modular programming principles.
+- Follow a clear directory structure for data ingestion, ETL, automation, and vectorization.
+
+# Modular Programming Guidelines
+- Break workflows into smaller, reusable tasks.
+- Use helper functions and utility modules for reusable logic.
+- Minimize coupling between modules by using well-defined interfaces.
+
+# Error Handling Guidelines for Python Scripts
+- Use `try`/`except` blocks for error handling and log errors with the `logging` module.
+- Avoid catching generic exceptions; prefer specific exceptions.
+
+# Error Handling Guidelines for Prefect Workflows
+- Use Prefect's built-in retry mechanisms and logging for workflow orchestration.
+
+# Error Handling Guidelines for Frontend (Chat-UI)
+- Use React's component-based architecture and organize components by role.
+- Use custom hooks for reusable logic and modular styling (TailwindCSS or CSS-in-JS).
+- Handle errors gracefully with user-friendly messages and log errors to a monitoring service.
+- Use TypeScript's type system to catch issues at compile time.
+
+# Workflow Guidelines
+- The project involves:
+  - Fetching raw data.
+  - ETL between MongoDB and PostgreSQL.
+  - Automating workflows with Prefect.
+  - Integrating a vector store (Qdrant) for enhanced data querying.
+  - Developing a chat-ui frontend with Next.js, TypeScript, and TailwindCSS.
+  - Connecting the chat-ui to the vector store for RAG-based querying.
