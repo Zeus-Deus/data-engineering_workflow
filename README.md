@@ -68,6 +68,45 @@ Example:
 python src/rag/rag_qa.py "What are cognitive biases?"
 ```
 
+## Neo4j Graph Storage & Automated Bias Detection
+
+This project now includes an automated pipeline for cognitive bias detection and graph storage using Neo4j.
+
+### How It Works
+
+- **Automated Script:**  
+  The script at `src/graph/automate_bias_detection.py` sends articles to the RAG/LLM backend, receives structured bias analysis, parses the results, and writes them to Neo4j as a knowledge graph.
+- **Graph Schema:**  
+  - **Article** nodes represent ingested articles.
+  - **Bias** nodes represent detected cognitive biases.
+  - **HAS_BIAS** relationships connect articles to biases, with properties for explanation and justification.
+
+### How to Use
+
+1. **Set up your environment variables** in `.env`:
+   ```
+   NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000      # or your FastAPI backend URL
+   NEO4J_URI=bolt://localhost:7687                    # or bolt://neo4j:7687 if running in Docker
+   NEO4J_AUTH=neo4j/your_secure_password              # your Neo4j credentials
+   ```
+2. **Ensure Neo4j and your FastAPI backend are running.**
+3. **Run the automation script:**
+   ```bash
+   python src/graph/automate_bias_detection.py
+   ```
+4. **View results in Neo4j:**
+   - Open [http://localhost:7474](http://localhost:7474) and log in.
+   - Run:
+     ```cypher
+     MATCH (a:Article)-[r:HAS_BIAS]->(b:Bias)
+     RETURN a, r, b
+     ```
+   - Explore the graph and relationship properties.
+
+### Why Neo4j?
+
+Neo4j enables advanced querying and visualization of relationships between articles and detected biases, supporting deeper analysis and insights.
+
 ## Chat UI
 
 The project includes a modern web-based chat interface built with Next.js for interacting with the RAG system. The chat UI provides a user-friendly way to ask questions and receive answers from the RAG system.
