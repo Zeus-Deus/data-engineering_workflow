@@ -95,6 +95,17 @@ services:
     depends_on:
       - app
 
+  neo4j:
+    image: neo4j:latest
+    restart: always
+    ports:
+      - "7474:7474"   # HTTP
+      - "7687:7687"   # Bolt
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH}
+    volumes:
+      - neo4j_data:/data
+
 configs:
   qdrant_config:
     content: |
@@ -104,3 +115,4 @@ volumes:
   mongodb_data:
   postgres_data:
   prefect-data:
+  neo4j_data:

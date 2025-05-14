@@ -19,3 +19,4 @@ langchain-qdrant
 openai
 fastapi
 pydantic
+neo4j
