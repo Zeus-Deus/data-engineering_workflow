@@ -1,5 +1,10 @@
+from dotenv import load_dotenv
+load_dotenv(dotenv_path="/usr/src/app/.env")
+
 import os
 import requests
+import re
+from neo4j import GraphDatabase
 
 # Test articles (public domain)
 ARTICLES = [
@@ -39,7 +44,19 @@ ARTICLES = [
     },
 ]
 
-FASTAPI_URL = os.getenv("FASTAPI_URL", "http://localhost:8000")
+# Get environment variables (no defaults)
+NEXT_PUBLIC_FASTAPI_URL = os.getenv("NEXT_PUBLIC_FASTAPI_URL")
+if not NEXT_PUBLIC_FASTAPI_URL:
+    raise EnvironmentError("NEXT_PUBLIC_FASTAPI_URL environment variable is required.")
+NEO4J_URI = os.getenv("NEO4J_URI")
+if not NEO4J_URI:
+    raise EnvironmentError("NEO4J_URI environment variable is required.")
+NEO4J_AUTH = os.getenv("NEO4J_AUTH")
+if not NEO4J_AUTH:
+    raise EnvironmentError("NEO4J_AUTH environment variable is required.")
+NEO4J_USER, NEO4J_PASS = NEO4J_AUTH.split("/")
+
+driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASS))
 
 PROMPT_TEMPLATE = """
 I will provide you with a text. Your task is to analyze the text and identify any cognitive biases that are present or suggested within it. For each bias you identify, provide:
@@ -53,14 +70,55 @@ Here is the text to analyze:
 Please analyze the text and list any cognitive biases you find, following the structure above.
 """
 
+def parse_llm_response(response_text):
+    """
+    Parses the LLM response and returns a list of dicts with keys: bias_name, explanation, justification
+    """
+    # Split by bias blocks (e.g., 'Confirmation Bias:', 'Outcome Bias:')
+    bias_blocks = re.split(r"\n(?=[A-Z][a-zA-Z ]+ Bias:)", response_text.strip())
+    results = []
+    for block in bias_blocks:
+        match = re.match(r"([A-Z][a-zA-Z ]+ Bias):\n- (.+?)\n- (.+)", block.strip(), re.DOTALL)
+        if match:
+            bias_name = match.group(1).replace(":", "")
+            explanation = match.group(2).strip()
+            justification = match.group(3).strip()
+            results.append({
+                "bias_name": bias_name,
+                "explanation": explanation,
+                "justification": justification
+            })
+    return results
+
+def write_to_neo4j(article, bias_info):
+    with driver.session() as session:
+        session.run(
+            '''
+            MERGE (a:Article {id: $article_id, title: $article_title})
+            MERGE (b:Bias {name: $bias_name})
+            MERGE (a)-[r:HAS_BIAS]->(b)
+            SET r.explanation = $explanation, r.justification = $justification
+            ''',
+            article_id=article["id"],
+            article_title=article["title"],
+            bias_name=bias_info["bias_name"],
+            explanation=bias_info["explanation"],
+            justification=bias_info["justification"]
+        )
+
 for article in ARTICLES:
     print(f"\nProcessing: {article['title']}")
     prompt = PROMPT_TEMPLATE.format(article_text=article["text"])
     payload = {"question": prompt}
     try:
-        response = requests.post(f"{FASTAPI_URL}/query", json=payload)
+        response = requests.post(f"{NEXT_PUBLIC_FASTAPI_URL}/query", json=payload)
         response.raise_for_status()
         data = response.json()
-        print("LLM Response:", data.get("answer"))
+        llm_response = data.get("answer", "")
+        print("LLM Response:", llm_response)
+        bias_infos = parse_llm_response(llm_response)
+        for bias_info in bias_infos:
+            print(f"  Parsed Bias: {bias_info['bias_name']}")
+            write_to_neo4j(article, bias_info)
     except Exception as e:
         print(f"Error processing article {article['id']}: {e}") 
